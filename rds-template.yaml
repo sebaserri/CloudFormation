@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'RDS creation This example shows an AWS::RDS::DBSecurityGroup resource with ingress authorization for multiple Amazon EC2 VPC security groups in AWS::RDS::DBSecurityGroupIngress.'
+
+Parameters:
+  DBName:
+    Type: String
+    Default: myDBName
+  DBUsername:
+    Type: String
+    Default: MyDBUsername
+  DBPassword:
+    Type: String
+    Default: MyDBPassword
+  MyDBSubnetGroup:
+    Type: String
+    Default: MyDBSubnetGroup
+  DBAllocatedStorage:
+    Type: String
+    Default: MyDBAllocatedStorage
+
+Resources:
+  DBinstance:
+    Type: AWS::RDS::DBInstance
+    Engine: MySQL
+    Properties:
+      AllocatedStorage: '5'
+      DBInstanceClass: db.m1.small
+      DBName: !Ref: DBName
+      DBSecurityGroups: !Ref MyDbSecurityByEC2SecurityGroup
+      DBSubnetGroupName: !Ref MyDBSubnetGroup
+      MasterUserPassword: !Ref DBPassword
+      MasterUsername: !Ref DBUsername
+    DeletionPolicy: Snapshot
+
+  MyDbSecurityByEC2SecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      GroupDescription: Ingress for Amazon EC2 security group
+      EC2VpcId:
+        Ref: MyVPC
+      DBSecurityGroupIngress:
+      - EC2SecurityGroupId: sg-b0ff1111
+        EC2SecurityGroupOwnerId: '111122223333'
+      - EC2SecurityGroupId: sg-ffd722222
+        EC2SecurityGroupOwnerId: '111122223333'

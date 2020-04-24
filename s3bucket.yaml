@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 bucket creation'
+
+Parameters:
+  Env: 
+    Type: String
+    AllowedValues:
+      - dev
+      - it
+      - prod
+    Default: dev
+  S3BucketName:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+
+Conditions:
+  IsProd: !Equals [!Ref Env, 'prod']
+
+Mappings:
+  EnvToAccountMapping:
+    dev:
+      Account: non-prod
+    it:
+      Account: non-prod
+    prod:
+      Account: prod
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join 
+        - '-'
+        - - !Ref S3BucketName
+          - !FindInMap [EnvToAccountMapping, !Ref Env, Account]
+      VersioningConfiguration:
+        Status: !If [IsProd, 'Enabled', 'Suspended']
+
+Outputs:
+  MyS3BucketOutput:
+    Value: !GetAtt MyS3Bucket.WebsiteURL
+    Export:
+      Name: !Sub '${AWS::StackName}-MyS3Bucket'

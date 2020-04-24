@@ -1,0 +1,4 @@
+aws cloudformation create-stack --template-body file:////Users/sserr/Documents/ec2-template1.yaml --stack-name ec2-instance-1 --parameters ParameterKey=KeyEC2Name,ParameterValue=seba ParameterKey=InstanceType,ParameterValue=t2.small ParameterKey=SSHLocation,ParameterValue=0.0.0.0/0
+
+aws cloudformation create-stack --template-body file:////Users/sserr/Documents/ec2-template2.yaml --stack-name ec2-instance-2
+
